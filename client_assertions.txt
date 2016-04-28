@@ -1,0 +1,38 @@
+----- 27/04/2016 23:10:19 - Aaurooraa (201.17.148.145) -----
+Debug Assertion 10.90 Utils.cpp 546
+Wed Apr 27 23:08:47 2016
+Graphic Engine: DirectX9 (2)
+Operating System: Windows Vista Family in BRA
+Processor: Intel Core i7 -2600 @ 3
+Video Card: NVIDIA GeForce GT 430
+Last Packet Types: 100 040 020 000 000 000 000 000 000 000
+Last Packet: 020 027 000 049 010 087 101 108 099 111 109 101 032 116 111 032
+Player.cpp 344: exception occurred, reason:
+Network.cpp 855: exception occurred, reason:
+Control.cpp 1522: exception occurred (Type = 100) (MainWindow = 03C44CD0), reason:
+Communication.cpp 1967: exception occurred (Count = 1), reason:
+Network.cpp 315: exception occurred, reason:
+Utils.cpp 546: assertion failed (Position = 118) (Size = 118), reason:
+Position<=Size-4
+Comment: 
+----- 28/04/2016 00:36:56 - Paladin (201.17.148.145) -----
+Debug Assertion 10.77 Communication.cpp 2539
+Thu Apr 28 00:34:02 2016
+Graphic Engine: DirectX9 (2)
+Operating System: Windows Vista Family in BRA
+Processor: Intel Core i7 -2600 @ 3
+Video Card: NVIDIA GeForce GT 430
+Last Packet Types: 108 131 131 106 108 131 131 106 108 131
+Last Packet: 131 014 004 026 004 007 013 140 107 000 000 064 099 180 028 014
+Player Position: [1031,1043,7]
+Player Name: Aaurooraa (Demons Gaming)
+Player Action: 048 046 048 046 048 046 048 058 055 049 055 050
+Player.cpp 344: exception occurred, reason:
+Network.cpp 841: exception occurred, reason:
+Control.cpp 1527: exception occurred (Type = 108) (MainWindow = 68448864), reason:
+Communication.cpp 2554: exception occurred (rx = 8) (ry = 5), reason:
+Communication.cpp 2539: Object is not where it should be, reason:
+ hx: 8 hy: 5 hz: 0 Pos: 1
+ Cylinder (1):  (4515,0)
+ Cylinder (2):  (4515,0)(-)(-)(-)(-)(-)(-)(-)(-)(-)
+Comment: 

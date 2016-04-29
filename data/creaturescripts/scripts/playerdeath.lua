@@ -72,7 +72,10 @@ function onDeath(player, corpse, killer, mostDamageKiller, unjustified, mostDama
 	end
 
 	if byPlayer == 1 then
-		killer:addExperience(getExpForLevel(killer:getLevel() + 1) - killer:getExperience(), true)
+		if (player:getLevel() + 20) >= killer:getLevel() then
+			killer:addExperience(getExpForLevel(killer:getLevel() + 1) - killer:getExperience(), true)
+			killer:addMoney(10000)
+		end
 		local targetGuild = player:getGuild()
 		targetGuild = targetGuild and targetGuild:getId() or 0
 		if targetGuild ~= 0 then

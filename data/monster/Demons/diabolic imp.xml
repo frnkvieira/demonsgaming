@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <monster name="Diabolic Imp" nameDescription="a diabolic imp" race="fire" experience="1950" speed="220" manacost="0">
-	<health now="2900" max="2900" />
+	<health now="10000" max="10000" />
 	<look type="237" corpse="6364" />
 	<targetchange interval="4000" chance="10" />
 	<flags>
@@ -18,18 +18,18 @@
 	</flags>
 	<attacks>
 		<attack name="melee" interval="2000" skill="70" attack="60" poison="160" />
-		<attack name="fire" interval="2000" chance="20" range="7" radius="4" target="1" min="-100" max="-240">
+		<attack name="fire" interval="700" chance="20" range="12" radius="4" target="1" min="-200" max="-400">
 			<attribute key="shootEffect" value="fire" />
 			<attribute key="areaEffect" value="firearea" />
 		</attack>
-		<attack name="fire" interval="2000" chance="10" range="7" radius="2" target="1" min="-300" max="-430">
+		<attack name="fire" interval="1000" chance="10" range="12" radius="2" target="1" min="-300" max="-600">
 			<attribute key="shootEffect" value="fire" />
 			<attribute key="areaEffect" value="fireattack" />
 		</attack>
 		<attack name="diabolic imp skill reducer" range="5" interval="2000" chance="5" />
 	</attacks>
 	<defenses armor="25" defense="25">
-		<defense name="healing" interval="2000" chance="10" min="650" max="800">
+		<defense name="healing" interval="2000" chance="100" min="2000" max="4000">
 			<attribute key="areaEffect" value="blueshimmer" />
 		</defense>
 		<defense name="speed" interval="2000" chance="15" speedchange="800" duration="2000">

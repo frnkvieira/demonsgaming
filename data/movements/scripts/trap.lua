@@ -11,9 +11,9 @@ function onStepIn(creature, item, position, fromPosition)
 		return true
 	end
 
-	if creature:isMonster() then
+	
 		doTargetCombatHealth(0, creature, trap.type or COMBAT_PHYSICALDAMAGE, trap.damage[1], trap.damage[2], CONST_ME_NONE)
-	end
+	
 
 	if trap.transformTo ~= nil then
 		item:transform(trap.transformTo)

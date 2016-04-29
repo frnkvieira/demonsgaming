@@ -1,6 +1,6 @@
 local traps = {
 	[1510] = {transformTo = 1511, damage = {-50, -100}},
-	[1513] = {damage = {-50, -100}},
+	[1513] = {damage = {-100, -150}},
 	[2579] = {transformTo = 2578, damage = {-15, -30}},
 	[4208] = {transformTo = 4209, damage = {-15, -30}, type = COMBAT_EARTHDAMAGE}
 }
@@ -10,11 +10,7 @@ function onStepIn(creature, item, position, fromPosition)
 	if trap == nil then
 		return true
 	end
-
-	
-		doTargetCombatHealth(0, creature, trap.type or COMBAT_PHYSICALDAMAGE, trap.damage[1], trap.damage[2], CONST_ME_NONE)
-	
-
+	doTargetCombatHealth(0, creature, trap.type or COMBAT_PHYSICALDAMAGE, trap.damage[1], trap.damage[2], CONST_ME_NONE)
 	if trap.transformTo ~= nil then
 		item:transform(trap.transformTo)
 	end

@@ -1,17 +1,21 @@
 <?xml version="1.0"?>
 <spawns>
-	<spawn centerx="996" centery="982" centerz="7" radius="1" />
+	<spawn centerx="994" centery="982" centerz="7" radius="1">
+		<monster name="Diabolic Imp" x="1" y="1" z="7" spawntime="60" />
+	</spawn>
 	<spawn centerx="987" centery="983" centerz="7" radius="1">
 		<monster name="Diabolic Imp" x="1" y="1" z="7" spawntime="60" />
 	</spawn>
-	<spawn centerx="982" centery="985" centerz="7" radius="1">
-		<monster name="Diabolic Imp" x="1" y="0" z="7" spawntime="60" />
+	<spawn centerx="982" centery="986" centerz="7" radius="1">
+		<monster name="Diabolic Imp" x="1" y="1" z="7" spawntime="60" />
 	</spawn>
-	<spawn centerx="997" centery="986" centerz="7" radius="1" />
-	<spawn centerx="981" centery="990" centerz="7" radius="1">
-		<monster name="Diabolic Imp" x="0" y="0" z="7" spawntime="60" />
+	<spawn centerx="997" centery="986" centerz="7" radius="1">
+		<monster name="Diabolic Imp" x="1" y="1" z="7" spawntime="60" />
 	</spawn>
-	<spawn centerx="1003" centery="1034" centerz="7" radius="1">
-		<monster name="Diabolic Imp" x="0" y="0" z="7" spawntime="60" />
+	<spawn centerx="980" centery="990" centerz="7" radius="1">
+		<monster name="Diabolic Imp" x="1" y="1" z="7" spawntime="60" />
+	</spawn>
+	<spawn centerx="1002" centery="1034" centerz="7" radius="1">
+		<monster name="Diabolic Imp" x="1" y="1" z="7" spawntime="60" />
 	</spawn>
 </spawns>

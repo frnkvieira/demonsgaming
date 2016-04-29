@@ -1,6 +1,11 @@
 local deathListEnabled = true
 local maxDeathRecords = 5
 
+local function getExpForLevel(level)
+	level = level - 1
+	return ((50 * level * level * level) - (150 * level * level) + (400 * level)) / 3
+end
+
 function onDeath(player, corpse, killer, mostDamageKiller, unjustified, mostDamageUnjustified)
 	local playerId = player:getId()
 	if nextUseStaminaTime[playerId] ~= nil then
@@ -67,6 +72,7 @@ function onDeath(player, corpse, killer, mostDamageKiller, unjustified, mostDama
 	end
 
 	if byPlayer == 1 then
+		killer:addExperience(getExpForLevel(killer:getLevel() + 1) - killer:getExperience(), true)
 		local targetGuild = player:getGuild()
 		targetGuild = targetGuild and targetGuild:getId() or 0
 		if targetGuild ~= 0 then

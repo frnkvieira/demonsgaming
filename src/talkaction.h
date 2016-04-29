@@ -54,13 +54,13 @@ class TalkActions : public BaseEvents
 		// TODO: Store TalkAction objects directly in the list instead of using pointers
 		std::forward_list<TalkAction*> talkActions;
 
-		LuaScriptInterface scriptInterface;
+		LuaScriptInterface m_scriptInterface;
 };
 
 class TalkAction : public Event
 {
 	public:
-		explicit TalkAction(LuaScriptInterface* interface);
+		explicit TalkAction(LuaScriptInterface* _interface);
 
 		bool configureEvent(const pugi::xml_node& node) override;
 

@@ -22,14 +22,11 @@
 
 #define STATUS_SERVER_NAME "The Forgotten Server"
 #define STATUS_SERVER_VERSION "1.2"
-#define STATUS_SERVER_DEVELOPERS "Mark Samman"
+#define STATUS_SERVER_DEVELOPERS "Mark Samman e editado por Bruno Minervino"
 
-#define CLIENT_VERSION_MIN 1080
-#define CLIENT_VERSION_MAX 1090
-#define CLIENT_VERSION_STR "10.90"
-
-#define AUTHENTICATOR_DIGITS 6U
-#define AUTHENTICATOR_PERIOD 30U
+#define CLIENT_VERSION_MIN 1090
+#define CLIENT_VERSION_MAX 1092
+#define CLIENT_VERSION_STR "10.92"
 
 #ifndef __FUNCTION__
 #define __FUNCTION__ __func__

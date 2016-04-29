@@ -20,6 +20,7 @@
 #include "otpch.h"
 
 #include "iomapserialize.h"
+#include "house.h"
 #include "game.h"
 #include "bed.h"
 

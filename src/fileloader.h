@@ -104,7 +104,7 @@ class FileLoader
 		NODE getNextNode(const NODE prev, uint32_t& type);
 
 		FILELOADER_ERRORS getError() const {
-			return lastError;
+			return m_lastError;
 		}
 
 	protected:
@@ -117,12 +117,12 @@ class FileLoader
 		bool parseNode(NODE node);
 
 		inline bool readByte(int32_t& value);
-		inline bool readBytes(uint32_t size, int32_t pos);
+		inline bool readBytes(uint8_t* buffer, uint32_t size, int32_t pos);
 		inline bool safeSeek(uint32_t pos);
 		inline bool safeTell(int32_t& pos);
 
 	protected:
-		struct cache {
+		struct _cache {
 			uint8_t* data;
 			uint32_t loaded;
 			uint32_t base;
@@ -130,19 +130,19 @@ class FileLoader
 		};
 
 #define CACHE_BLOCKS 3
-		cache cached_data[CACHE_BLOCKS];
+		_cache m_cached_data[CACHE_BLOCKS];
 
-		uint8_t* buffer;
-		NODE root;
-		FILE* file;
+		uint8_t* m_buffer;
+		NODE m_root;
+		FILE* m_file;
 
-		FILELOADER_ERRORS lastError;
-		uint32_t buffer_size;
+		FILELOADER_ERRORS m_lastError;
+		uint32_t m_buffer_size;
 
-		uint32_t cache_size;
+		uint32_t m_cache_size;
 #define NO_VALID_CACHE 0xFFFFFFFF
-		uint32_t cache_index;
-		uint32_t cache_offset;
+		uint32_t m_cache_index;
+		uint32_t m_cache_offset;
 
 		inline uint32_t getCacheBlock(uint32_t pos);
 		int32_t loadCacheBlock(uint32_t pos);
@@ -230,8 +230,8 @@ class PropWriteStream
 		PropWriteStream(const PropWriteStream&) = delete;
 		PropWriteStream& operator=(const PropWriteStream&) = delete;
 
-		const char* getStream(size_t& size) const {
-			size = this->size;
+		const char* getStream(size_t& _size) const {
+			_size = size;
 			return buffer;
 		}
 

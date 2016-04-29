@@ -102,8 +102,6 @@ enum CreatureType_t : uint8_t {
 };
 
 enum OperatingSystem_t : uint8_t {
-	CLIENTOS_NONE = 0,
-
 	CLIENTOS_LINUX = 1,
 	CLIENTOS_WINDOWS = 2,
 	CLIENTOS_FLASH = 3,
@@ -139,7 +137,7 @@ enum RaceType_t : uint8_t {
 };
 
 enum CombatType_t {
-	COMBAT_NONE = 0,
+	COMBAT_NONE,
 
 	COMBAT_PHYSICALDAMAGE = 1 << 0,
 	COMBAT_ENERGYDAMAGE = 1 << 1,
@@ -451,10 +449,16 @@ struct Outfit_t {
 };
 
 struct LightInfo {
-	uint8_t level = 0;
-	uint8_t color = 0;
-	LightInfo() = default;
-	LightInfo(uint8_t level, uint8_t color) : level(level), color(color) {}
+	uint8_t level;
+	uint8_t color;
+	LightInfo() {
+		level = 0;
+		color = 0;
+	}
+	LightInfo(uint8_t _level, uint8_t _color) {
+		level = _level;
+		color = _color;
+	}
 };
 
 struct ShopInfo {

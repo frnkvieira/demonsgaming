@@ -28,32 +28,39 @@ std::string Mission::getDescription(Player* player) const
 	int32_t value;
 	player->getStorageValue(storageID, value);
 
-	if (!mainDescription.empty()) {
-		std::string desc = mainDescription;
+	if (mainState) {
+		std::string desc = mainState->getMissionDescription();
 		replaceString(desc, "|STATE|", std::to_string(value));
 		replaceString(desc, "\\n", "\n");
 		return desc;
 	}
 
+	int32_t current = endValue;
+
 	if (ignoreEndValue) {
-		for (int32_t current = endValue; current >= startValue; current--) {
+		while (current >= startValue) {
 			if (value >= current) {
-				auto sit = descriptions.find(current);
-				if (sit != descriptions.end()) {
-					return sit->second;
+				auto sit = state.find(current);
+				if (sit != state.end()) {
+					return sit->second.getMissionDescription();
 				}
 			}
+
+			current--;
 		}
 	} else {
-		for (int32_t current = endValue; current >= startValue; current--) {
+		while (current >= startValue) {
 			if (value == current) {
-				auto sit = descriptions.find(current);
-				if (sit != descriptions.end()) {
-					return sit->second;
+				auto sit = state.find(current);
+				if (sit != state.end()) {
+					return sit->second.getMissionDescription();
 				}
 			}
+
+			current--;
 		}
 	}
+
 	return "An error has occurred, please contact a gamemaster.";
 }
 
@@ -166,7 +173,7 @@ bool Quests::loadFromXml()
 		Quest& quest = quests.back();
 
 		for (auto missionNode : questNode.children()) {
-			std::string mainDescription = missionNode.attribute("description").as_string();
+			std::string missionState = missionNode.attribute("description").as_string();
 
 			quest.missions.emplace_back(
 				missionNode.attribute("name").as_string(),
@@ -177,13 +184,13 @@ bool Quests::loadFromXml()
 			);
 			Mission& mission = quest.missions.back();
 
-			if (mainDescription.empty()) {
+			if (missionState.empty()) {
 				for (auto missionStateNode : missionNode.children()) {
 					int32_t missionId = pugi::cast<int32_t>(missionStateNode.attribute("id").value());
-					mission.descriptions.emplace(missionId, missionStateNode.attribute("description").as_string());
+					mission.state.emplace(missionId, MissionState(missionStateNode.attribute("description").as_string(), missionId));
 				}
 			} else {
-				mission.mainDescription = mainDescription;
+				mission.mainState = new MissionState(missionState, 0);
 			}
 		}
 	}
@@ -219,8 +226,14 @@ bool Quests::isQuestStorage(const uint32_t key, const int32_t value, const int32
 		}
 
 		for (const Mission& mission : quest.getMissions()) {
-			if (mission.getStorageId() == key && value >= mission.getStartStorageValue() && value <= mission.getEndStorageValue()) {
-				return mission.mainDescription.empty() || oldValue < mission.getStartStorageValue() || oldValue > mission.getEndStorageValue();
+			if (mission.mainState) {
+				if (mission.getStorageId() == key && value >= mission.getStartStorageValue() && value <= mission.getEndStorageValue() && (oldValue < mission.getStartStorageValue() || oldValue > mission.getEndStorageValue())) {
+					return true;
+				}
+			} else {
+				if (mission.getStorageId() == key && value >= mission.getStartStorageValue() && value <= mission.getEndStorageValue()) {
+					return true;
+				}
 			}
 		}
 	}

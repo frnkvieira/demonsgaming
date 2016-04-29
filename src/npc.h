@@ -68,7 +68,7 @@ class NpcScriptInterface final : public LuaScriptInterface
 		bool initState() final;
 		bool closeState() final;
 
-		bool libLoaded;
+		bool m_libLoaded;
 };
 
 class NpcEventsHandler
@@ -88,17 +88,17 @@ class NpcEventsHandler
 		bool isLoaded() const;
 
 	protected:
-		Npc* npc;
-		NpcScriptInterface* scriptInterface;
+		Npc* m_npc;
+		NpcScriptInterface* m_scriptInterface;
 
-		int32_t creatureAppearEvent;
-		int32_t creatureDisappearEvent;
-		int32_t creatureMoveEvent;
-		int32_t creatureSayEvent;
-		int32_t playerCloseChannelEvent;
-		int32_t playerEndTradeEvent;
-		int32_t thinkEvent;
-		bool loaded;
+		int32_t m_onCreatureAppear;
+		int32_t m_onCreatureDisappear;
+		int32_t m_onCreatureMove;
+		int32_t m_onCreatureSay;
+		int32_t m_onPlayerCloseChannel;
+		int32_t m_onPlayerEndTrade;
+		int32_t m_onThink;
+		bool m_loaded;
 };
 
 class Npc final : public Creature
@@ -186,7 +186,7 @@ class Npc final : public Creature
 		static uint32_t npcAutoID;
 
 	protected:
-		explicit Npc(const std::string& name);
+		explicit Npc(const std::string& _name);
 
 		void onCreatureAppear(Creature* creature, bool isLogin) final;
 		void onRemoveCreature(Creature* creature, bool isLogout) final;
@@ -212,20 +212,20 @@ class Npc final : public Creature
 		bool getRandomStep(Direction& dir) const;
 
 		void reset();
-		bool loadFromXml();
+		bool loadFromXml(const std::string& name);
 
 		void addShopPlayer(Player* player);
 		void removeShopPlayer(Player* player);
 		void closeAllShopWindows();
 
-		std::map<std::string, std::string> parameters;
+		std::map<std::string, std::string> m_parameters;
 
 		std::set<Player*> shopPlayerSet;
 
 		std::string name;
-		std::string filename;
+		std::string m_filename;
 
-		NpcEventsHandler* npcEventHandler;
+		NpcEventsHandler* m_npcEventHandler;
 
 		Position masterPos;
 
@@ -240,7 +240,7 @@ class Npc final : public Creature
 		bool ignoreHeight;
 		bool loaded;
 
-		static NpcScriptInterface* scriptInterface;
+		static NpcScriptInterface* m_scriptInterface;
 
 		friend class Npcs;
 		friend class NpcScriptInterface;

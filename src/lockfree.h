@@ -27,7 +27,7 @@ class LockfreePoolingAllocator : public std::allocator<T>
 {
 	public:
 		template <typename U>
-		explicit LockfreePoolingAllocator(const U&) {}
+		LockfreePoolingAllocator(const U&) {}
 		typedef T value_type;
 
 		T* allocate(size_t) const {

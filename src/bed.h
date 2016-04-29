@@ -48,6 +48,10 @@ class BedItem final : public Item
 			return sleeperGUID;
 		}
 
+		uint64_t getSleepStart() const {
+			return sleepStart;
+		}
+
 		House* getHouse() const {
 			return house;
 		}

@@ -388,22 +388,22 @@ void Party::updateVocationsList()
 	}
 }
 
-bool Party::setSharedExperience(Player* player, bool sharedExpActive)
+bool Party::setSharedExperience(Player* player, bool _sharedExpActive)
 {
 	if (!player || leader != player) {
 		return false;
 	}
 
-	if (this->sharedExpActive == sharedExpActive) {
+	if (sharedExpActive == _sharedExpActive) {
 		return true;
 	}
 
-	this->sharedExpActive = sharedExpActive;
+	sharedExpActive = _sharedExpActive;
 
 	if (sharedExpActive) {
-		this->sharedExpEnabled = canEnableSharedExperience();
+		sharedExpEnabled = canEnableSharedExperience();
 
-		if (this->sharedExpEnabled) {
+		if (sharedExpEnabled) {
 			leader->sendTextMessage(MESSAGE_INFO_DESCR, "Shared Experience is now active.");
 		} else {
 			leader->sendTextMessage(MESSAGE_INFO_DESCR, "Shared Experience has been activated, but some members of your party are inactive.");

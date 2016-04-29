@@ -23,14 +23,12 @@
 #include "game.h"
 
 #if LUA_VERSION_NUM >= 502
-#undef lua_strlen
 #define lua_strlen lua_rawlen
 #endif
 
 extern Game g_game;
 
 ConfigManager::ConfigManager()
-	: integer(), boolean()
 {
 	loaded = false;
 }
@@ -138,38 +136,38 @@ bool ConfigManager::reload()
 	return result;
 }
 
-const std::string& ConfigManager::getString(string_config_t what) const
+const std::string& ConfigManager::getString(string_config_t _what) const
 {
-	if (what >= LAST_STRING_CONFIG) {
-		std::cout << "[Warning - ConfigManager::getString] Accessing invalid index: " << what << std::endl;
+	if (_what >= LAST_STRING_CONFIG) {
+		std::cout << "[Warning - ConfigManager::getString] Accessing invalid index: " << _what << std::endl;
 		return string[DUMMY_STR];
 	}
-	return string[what];
+	return string[_what];
 }
 
-int32_t ConfigManager::getNumber(integer_config_t what) const
+int32_t ConfigManager::getNumber(integer_config_t _what) const
 {
-	if (what >= LAST_INTEGER_CONFIG) {
-		std::cout << "[Warning - ConfigManager::getNumber] Accessing invalid index: " << what << std::endl;
+	if (_what >= LAST_INTEGER_CONFIG) {
+		std::cout << "[Warning - ConfigManager::getNumber] Accessing invalid index: " << _what << std::endl;
 		return 0;
 	}
-	return integer[what];
+	return integer[_what];
 }
 
-bool ConfigManager::getBoolean(boolean_config_t what) const
+bool ConfigManager::getBoolean(boolean_config_t _what) const
 {
-	if (what >= LAST_BOOLEAN_CONFIG) {
-		std::cout << "[Warning - ConfigManager::getBoolean] Accessing invalid index: " << what << std::endl;
+	if (_what >= LAST_BOOLEAN_CONFIG) {
+		std::cout << "[Warning - ConfigManager::getBoolean] Accessing invalid index: " << _what << std::endl;
 		return false;
 	}
-	return boolean[what];
+	return boolean[_what];
 }
 
-std::string ConfigManager::getGlobalString(lua_State* L, const char* identifier, const char* defaultValue)
+std::string ConfigManager::getGlobalString(lua_State* L, const char* identifier, const char* _default)
 {
 	lua_getglobal(L, identifier);
 	if (!lua_isstring(L, -1)) {
-		return defaultValue;
+		return _default;
 	}
 
 	size_t len = lua_strlen(L, -1);
@@ -178,11 +176,11 @@ std::string ConfigManager::getGlobalString(lua_State* L, const char* identifier,
 	return ret;
 }
 
-int32_t ConfigManager::getGlobalNumber(lua_State* L, const char* identifier, const int32_t defaultValue)
+int32_t ConfigManager::getGlobalNumber(lua_State* L, const char* identifier, const int32_t _default)
 {
 	lua_getglobal(L, identifier);
 	if (!lua_isnumber(L, -1)) {
-		return defaultValue;
+		return _default;
 	}
 
 	int32_t val = lua_tonumber(L, -1);
@@ -190,12 +188,12 @@ int32_t ConfigManager::getGlobalNumber(lua_State* L, const char* identifier, con
 	return val;
 }
 
-bool ConfigManager::getGlobalBoolean(lua_State* L, const char* identifier, const bool defaultValue)
+bool ConfigManager::getGlobalBoolean(lua_State* L, const char* identifier, const bool _default)
 {
 	lua_getglobal(L, identifier);
 	if (!lua_isboolean(L, -1)) {
 		if (!lua_isstring(L, -1)) {
-			return defaultValue;
+			return _default;
 		}
 
 		size_t len = lua_strlen(L, -1);

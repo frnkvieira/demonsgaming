@@ -26,7 +26,7 @@
 class DepotLocker final : public Container
 {
 	public:
-		explicit DepotLocker(uint16_t type);
+		explicit DepotLocker(uint16_t _type);
 
 		DepotLocker* getDepotLocker() final {
 			return this;

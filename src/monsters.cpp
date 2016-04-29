@@ -1136,7 +1136,7 @@ bool Monsters::loadMonster(const std::string& file, const std::string& monsterNa
 			if ((attr = summonNode.attribute("chance"))) {
 				chance = pugi::cast<int32_t>(attr.value());
 			}
-			
+
 			if ((attr = summonNode.attribute("force"))) {
 				force = attr.as_bool();
 			}

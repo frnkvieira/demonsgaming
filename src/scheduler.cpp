@@ -131,4 +131,3 @@ void Scheduler::shutdown()
 	eventLock.unlock();
 	eventSignal.notify_one();
 }
-

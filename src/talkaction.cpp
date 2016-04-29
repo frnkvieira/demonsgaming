@@ -24,9 +24,9 @@
 #include "pugicast.h"
 
 TalkActions::TalkActions()
-	: scriptInterface("TalkAction Interface")
+	: m_scriptInterface("TalkAction Interface")
 {
-	scriptInterface.initState();
+	m_scriptInterface.initState();
 }
 
 TalkActions::~TalkActions()
@@ -41,12 +41,12 @@ void TalkActions::clear()
 	}
 	talkActions.clear();
 
-	scriptInterface.reInitState();
+	m_scriptInterface.reInitState();
 }
 
 LuaScriptInterface& TalkActions::getScriptInterface()
 {
-	return scriptInterface;
+	return m_scriptInterface;
 }
 
 std::string TalkActions::getScriptBaseName() const
@@ -59,7 +59,7 @@ Event* TalkActions::getEvent(const std::string& nodeName)
 	if (strcasecmp(nodeName.c_str(), "talkaction") != 0) {
 		return nullptr;
 	}
-	return new TalkAction(&scriptInterface);
+	return new TalkAction(&m_scriptInterface);
 }
 
 bool TalkActions::registerEvent(Event* event, const pugi::xml_node&)
@@ -107,8 +107,11 @@ TalkActionResult_t TalkActions::playerSaySpell(Player* player, SpeakClasses type
 	return TALKACTION_CONTINUE;
 }
 
-TalkAction::TalkAction(LuaScriptInterface* interface) :
-	Event(interface), separator('"') {}
+TalkAction::TalkAction(LuaScriptInterface* _interface) :
+	Event(_interface)
+{
+	separator = '"';
+}
 
 bool TalkAction::configureEvent(const pugi::xml_node& node)
 {
@@ -135,17 +138,17 @@ std::string TalkAction::getScriptEventName() const
 bool TalkAction::executeSay(Player* player, const std::string& param, SpeakClasses type) const
 {
 	//onSay(player, words, param, type)
-	if (!scriptInterface->reserveScriptEnv()) {
+	if (!m_scriptInterface->reserveScriptEnv()) {
 		std::cout << "[Error - TalkAction::executeSay] Call stack overflow" << std::endl;
 		return false;
 	}
 
-	ScriptEnvironment* env = scriptInterface->getScriptEnv();
-	env->setScriptId(scriptId, scriptInterface);
+	ScriptEnvironment* env = m_scriptInterface->getScriptEnv();
+	env->setScriptId(m_scriptId, m_scriptInterface);
 
-	lua_State* L = scriptInterface->getLuaState();
+	lua_State* L = m_scriptInterface->getLuaState();
 
-	scriptInterface->pushFunction(scriptId);
+	m_scriptInterface->pushFunction(m_scriptId);
 
 	LuaScriptInterface::pushUserdata<Player>(L, player);
 	LuaScriptInterface::setMetatable(L, -1, "Player");
@@ -154,5 +157,5 @@ bool TalkAction::executeSay(Player* player, const std::string& param, SpeakClass
 	LuaScriptInterface::pushString(L, param);
 	lua_pushnumber(L, type);
 
-	return scriptInterface->callFunction(4);
+	return m_scriptInterface->callFunction(4);
 }

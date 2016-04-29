@@ -25,19 +25,25 @@
 
 extern Game g_game;
 
-Container::Container(uint16_t type) :
-	Container(type, items[type].maxItems) {}
+Container::Container(uint16_t _type) : Item(_type)
+{
+	maxSize = items[_type].maxItems;
+	totalWeight = 0;
+	serializationCount = 0;
+	unlocked = true;
+	pagination = false;
+}
 
-Container::Container(uint16_t type, uint16_t size, bool unlocked /*= true*/, bool pagination /*= false*/) :
-	Item(type),
-	maxSize(size),
-	totalWeight(0),
-	serializationCount(0),
-	unlocked(unlocked),
-	pagination(pagination)
-{}
+Container::Container(uint16_t _type, uint16_t _size) : Item(_type)
+{
+	maxSize = _size;
+	totalWeight = 0;
+	serializationCount = 0;
+	unlocked = true;
+	pagination = false;
+}
 
-Container::Container(Tile* tile) : Container(ITEM_BROWSEFIELD, 30, false, true)
+Container::Container(Tile* tile) : Item(ITEM_BROWSEFIELD)
 {
 	TileItemVector* itemVector = tile->getItemList();
 	if (itemVector) {
@@ -49,6 +55,11 @@ Container::Container(Tile* tile) : Container(ITEM_BROWSEFIELD, 30, false, true)
 		}
 	}
 
+	maxSize = 30;
+	totalWeight = 0;
+	serializationCount = 0;
+	unlocked = false;
+	pagination = true;
 	setParent(tile);
 }
 
@@ -308,7 +319,7 @@ ReturnValue Container::queryAdd(int32_t index, const Thing& thing, uint32_t coun
 			cylinder = cylinder->getParent();
 		}
 
-		if (index == INDEX_WHEREEVER && size() >= capacity()) {
+		if (index == INDEX_WHEREEVER && size() >= capacity() && !hasPagination()) {
 			return RETURNVALUE_CONTAINERNOTENOUGHROOM;
 		}
 	} else {
@@ -338,7 +349,7 @@ ReturnValue Container::queryMaxCount(int32_t index, const Thing& thing, uint32_t
 		return RETURNVALUE_NOTPOSSIBLE;
 	}
 
-	if (hasBitSet(FLAG_NOLIMIT, flags)) {
+	if (hasBitSet(FLAG_NOLIMIT, flags) || hasPagination()) {
 		maxQueryCount = std::max<uint32_t>(1, count);
 		return RETURNVALUE_NOERROR;
 	}

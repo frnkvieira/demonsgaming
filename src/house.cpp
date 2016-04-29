@@ -30,18 +30,21 @@
 extern ConfigManager g_config;
 extern Game g_game;
 
-House::House(uint32_t houseId) :
-	transfer_container(ITEM_LOCKER1),
-	transferItem(nullptr),
-	paidUntil(0),
-	id(houseId),
-	owner(0),
-	rentWarnings(0),
-	rent(0),
-	townId(0),
-	posEntry(),
-	isLoaded(false)
-{}
+House::House(uint32_t _houseid) :
+	transfer_container(ITEM_LOCKER1)
+{
+	isLoaded = false;
+	owner = 0;
+	posEntry.x = 0;
+	posEntry.y = 0;
+	posEntry.z = 0;
+	paidUntil = 0;
+	id = _houseid;
+	rentWarnings = 0;
+	rent = 0;
+	townid = 0;
+	transferItem = nullptr;
+}
 
 void House::addTile(HouseTile* tile)
 {
@@ -211,7 +214,7 @@ void House::setAccessList(uint32_t listId, const std::string& textlist)
 
 bool House::transferToDepot() const
 {
-	if (townId == 0 || owner == 0) {
+	if (townid == 0 || owner == 0) {
 		return false;
 	}
 
@@ -232,7 +235,7 @@ bool House::transferToDepot() const
 
 bool House::transferToDepot(Player* player) const
 {
-	if (townId == 0 || owner == 0) {
+	if (townid == 0 || owner == 0) {
 		return false;
 	}
 
@@ -402,18 +405,18 @@ bool House::executeTransfer(HouseTransferItem* item, Player* newOwner)
 	return true;
 }
 
-void AccessList::parseList(const std::string& list)
+void AccessList::parseList(const std::string& _list)
 {
 	playerList.clear();
 	guildList.clear();
 	expressionList.clear();
 	regExList.clear();
-	this->list = list;
-	if (list.empty()) {
+	list = _list;
+	if (_list.empty()) {
 		return;
 	}
 
-	std::istringstream listStream(list);
+	std::istringstream listStream(_list);
 	std::string line;
 
 	while (getline(listStream, line)) {
@@ -515,13 +518,17 @@ bool AccessList::isInList(const Player* player)
 	return guild && guildList.find(guild->getId()) != guildList.end();
 }
 
-void AccessList::getList(std::string& list) const
+void AccessList::getList(std::string& _list) const
 {
-	list = this->list;
+	_list = list;
 }
 
-Door::Door(uint16_t type) :
-	Item(type), house(nullptr), accessList(nullptr) {}
+Door::Door(uint16_t _type)
+	: Item(_type)
+{
+	house = nullptr;
+	accessList = nullptr;
+}
 
 Door::~Door()
 {
@@ -531,24 +538,24 @@ Door::~Door()
 Attr_ReadValue Door::readAttr(AttrTypes_t attr, PropStream& propStream)
 {
 	if (attr == ATTR_HOUSEDOORID) {
-		uint8_t doorId;
-		if (!propStream.read<uint8_t>(doorId)) {
+		uint8_t _doorId;
+		if (!propStream.read<uint8_t>(_doorId)) {
 			return ATTR_READ_ERROR;
 		}
 
-		setDoorId(doorId);
+		setDoorId(_doorId);
 		return ATTR_READ_CONTINUE;
 	}
 	return Item::readAttr(attr, propStream);
 }
 
-void Door::setHouse(House* house)
+void Door::setHouse(House* _house)
 {
-	if (this->house != nullptr) {
+	if (house != nullptr) {
 		return;
 	}
 
-	this->house = house;
+	house = _house;
 
 	if (!accessList) {
 		accessList = new AccessList();

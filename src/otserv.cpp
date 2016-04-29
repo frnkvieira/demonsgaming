@@ -55,7 +55,7 @@ std::unique_lock<std::mutex> g_loaderUniqueLock(g_loaderLock);
 
 void startupErrorMessage(const std::string& errorStr)
 {
-	std::cout << "> ERROR: " << errorStr << std::endl;
+	std::cout << "> ERRO: " << errorStr << std::endl;
 	g_loaderSignal.notify_all();
 }
 
@@ -64,7 +64,7 @@ void mainLoader(int argc, char* argv[], ServiceManager* servicer);
 void badAllocationHandler()
 {
 	// Use functions that only use stack allocation
-	puts("Allocation failed, server out of memory.\nDecrease the size of your map or compile in 64 bits mode.\n");
+	puts("Falha na alocacao, servidor sem memoria.\nDiminua o tamanho do seu mapa ou compile em 64 bits.\n");
 	getchar();
 	exit(-1);
 }
@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
 #endif
 		serviceManager.run();
 	} else {
-		std::cout << ">> No services running. The server is NOT online." << std::endl;
+		std::cout << ">> Nao ha servicos em execucao. O server NAO esta online." << std::endl;
 		g_scheduler.shutdown();
 		g_databaseTasks.shutdown();
 		g_dispatcher.shutdown();
@@ -130,9 +130,9 @@ void mainLoader(int, char*[], ServiceManager* services)
 #ifdef _WIN32
 	SetConsoleTitle(STATUS_SERVER_NAME);
 #endif
-	std::cout << STATUS_SERVER_NAME << " - Version " << STATUS_SERVER_VERSION << std::endl;
-	std::cout << "Compiled with " << BOOST_COMPILER << std::endl;
-	std::cout << "Compiled on " << __DATE__ << ' ' << __TIME__ << " for platform ";
+	std::cout << STATUS_SERVER_NAME << " - Versao " << STATUS_SERVER_VERSION << std::endl;
+	std::cout << "Compilado com " << BOOST_COMPILER << std::endl;
+	std::cout << "Compilado em " << __DATE__ << ' ' << __TIME__ << " para plataforma ";
 
 #if defined(__amd64__) || defined(_M_X64)
 	std::cout << "x64" << std::endl;
@@ -141,18 +141,19 @@ void mainLoader(int, char*[], ServiceManager* services)
 #elif defined(__arm__)
 	std::cout << "ARM" << std::endl;
 #else
-	std::cout << "unknown" << std::endl;
+	std::cout << "desconhecida" << std::endl;
 #endif
 	std::cout << std::endl;
 
-	std::cout << "A server developed by " << STATUS_SERVER_DEVELOPERS << std::endl;
-	std::cout << "Visit our forum for updates, support, and resources: http://otland.net/." << std::endl;
+	std::cout << "Este servidor foi desenvolvido por " << STATUS_SERVER_DEVELOPERS << std::endl;
+	std::cout << "Visite nosso forum para updates, suporte e pedidos: http://xtibia.com/." << std::endl;
+	std::cout << "Um oferecimento OTPanel, OTserv Cloud em 60s." << std::endl;
 	std::cout << std::endl;
 
 	// read global config
-	std::cout << ">> Loading config" << std::endl;
+	std::cout << ">> Carregando configuracoes" << std::endl;
 	if (!g_config.load()) {
-		startupErrorMessage("Unable to load config.lua!");
+		startupErrorMessage("Falha ao carregar o config.lua!");
 		return;
 	}
 
@@ -170,21 +171,21 @@ void mainLoader(int, char*[], ServiceManager* services)
 	const char* q("7630979195970404721891201847792002125535401292779123937207447574596692788513647179235335529307251350570728407373705564708871762033017096809910315212884101");
 	g_RSA.setKey(p, q);
 
-	std::cout << ">> Establishing database connection..." << std::flush;
+	std::cout << ">> Estabilizando conexao com o banco de dados..." << std::flush;
 
 	Database* db = Database::getInstance();
 	if (!db->connect()) {
-		startupErrorMessage("Failed to connect to database.");
+		startupErrorMessage("Falha ao conectar-se com o banco de dados.");
 		return;
 	}
 
 	std::cout << " MySQL " << Database::getClientVersion() << std::endl;
 
 	// run database manager
-	std::cout << ">> Running database manager" << std::endl;
+	std::cout << ">> Carregando banco de dados" << std::endl;
 
 	if (!DatabaseManager::isDatabaseSetup()) {
-		startupErrorMessage("The database you have specified in config.lua is empty, please import the schema.sql to your database.");
+		startupErrorMessage("O banco de dados que especificou no config.lua esta vazio, por favor importar o schema.sql para seu banco de dados.");
 		return;
 	}
 	g_databaseTasks.start();
@@ -192,48 +193,48 @@ void mainLoader(int, char*[], ServiceManager* services)
 	DatabaseManager::updateDatabase();
 
 	if (g_config.getBoolean(ConfigManager::OPTIMIZE_DATABASE) && !DatabaseManager::optimizeTables()) {
-		std::cout << "> No tables were optimized." << std::endl;
+		std::cout << "> Nenhuma tabela foi otimizada." << std::endl;
 	}
 
 	//load vocations
-	std::cout << ">> Loading vocations" << std::endl;
+	std::cout << ">> Carregando vocacoes" << std::endl;
 	if (!g_vocations.loadFromXml()) {
-		startupErrorMessage("Unable to load vocations!");
+		startupErrorMessage("Impossivel carregar vocacoes!");
 		return;
 	}
 
 	// load item data
-	std::cout << ">> Loading items" << std::endl;
+	std::cout << ">> Carregando items" << std::endl;
 	if (Item::items.loadFromOtb("data/items/items.otb") != ERROR_NONE) {
-		startupErrorMessage("Unable to load items (OTB)!");
+		startupErrorMessage("Impossivel carregar items (OTB)!");
 		return;
 	}
 
 	if (!Item::items.loadFromXml()) {
-		startupErrorMessage("Unable to load items (XML)!");
+		startupErrorMessage("Impossivel carregar (XML)!");
 		return;
 	}
 
-	std::cout << ">> Loading script systems" << std::endl;
+	std::cout << ">> Carregando sistemas de scripts" << std::endl;
 	if (!ScriptingManager::getInstance()->loadScriptSystems()) {
-		startupErrorMessage("Failed to load script systems");
+		startupErrorMessage("Impossivel carregar sistemas de scripts");
 		return;
 	}
 
-	std::cout << ">> Loading monsters" << std::endl;
+	std::cout << ">> Carregando criaturas" << std::endl;
 	if (!g_monsters.loadFromXml()) {
-		startupErrorMessage("Unable to load monsters!");
+		startupErrorMessage("Impossivel carregar criaturas!");
 		return;
 	}
 
-	std::cout << ">> Loading outfits" << std::endl;
+	std::cout << ">> Carregando outfits" << std::endl;
 	Outfits* outfits = Outfits::getInstance();
 	if (!outfits->loadFromXml()) {
-		startupErrorMessage("Unable to load outfits!");
+		startupErrorMessage("Impossivel carregar outfits!");
 		return;
 	}
 
-	std::cout << ">> Checking world type... " << std::flush;
+	std::cout << ">> Checando tipo do servidor... " << std::flush;
 	std::string worldType = asLowerCaseString(g_config.getString(ConfigManager::WORLD_TYPE));
 	if (worldType == "pvp") {
 		g_game.setWorldType(WORLD_TYPE_PVP);
@@ -245,19 +246,19 @@ void mainLoader(int, char*[], ServiceManager* services)
 		std::cout << std::endl;
 
 		std::ostringstream ss;
-		ss << "> ERROR: Unknown world type: " << g_config.getString(ConfigManager::WORLD_TYPE) << ", valid world types are: pvp, no-pvp and pvp-enforced.";
+		ss << "> ERRO: Tipo do servidor desconhecido: " << g_config.getString(ConfigManager::WORLD_TYPE) << ", os tipos validos sao: pvp, no-pvp and pvp-enforced.";
 		startupErrorMessage(ss.str());
 		return;
 	}
 	std::cout << asUpperCaseString(worldType) << std::endl;
 
-	std::cout << ">> Loading map" << std::endl;
+	std::cout << ">> Carregando mapa" << std::endl;
 	if (!g_game.loadMainMap(g_config.getString(ConfigManager::MAP_NAME))) {
-		startupErrorMessage("Failed to load map");
+		startupErrorMessage("Impossivel carregar o mapa");
 		return;
 	}
 
-	std::cout << ">> Initializing gamestate" << std::endl;
+	std::cout << ">> Inicializando o servidor" << std::endl;
 	g_game.setGameState(GAME_STATE_INIT);
 
 	// Game client protocols
@@ -290,11 +291,11 @@ void mainLoader(int, char*[], ServiceManager* services)
 	IOMarket::checkExpiredOffers();
 	IOMarket::getInstance()->updateStatistics();
 
-	std::cout << ">> Loaded all modules, server starting up..." << std::endl;
+	std::cout << ">> Todos os modulos carregados, servidor iniciando..." << std::endl;
 
 #ifndef _WIN32
 	if (getuid() == 0 || geteuid() == 0) {
-		std::cout << "> Warning: " << STATUS_SERVER_NAME << " has been executed as root user, please consider running it as a normal user." << std::endl;
+		std::cout << "> Aviso: O servidor foi executado com usuario root, por favor considere executa-lo como um usuario normal." << std::endl;
 	}
 #endif
 

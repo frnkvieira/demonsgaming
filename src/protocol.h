@@ -25,7 +25,7 @@
 class Protocol : public std::enable_shared_from_this<Protocol>
 {
 	public:
-		explicit Protocol(Connection_ptr connection) : connection(connection), key(), encryptionEnabled(false), checksumEnabled(true), rawMessages(false) {}
+		explicit Protocol(Connection_ptr connection) : m_connection(connection), m_key(), m_encryptionEnabled(false), m_checksumEnabled(true), m_rawMessages(false) {}
 		virtual ~Protocol() = default;
 
 		// non-copyable
@@ -40,11 +40,11 @@ class Protocol : public std::enable_shared_from_this<Protocol>
 		virtual void onConnect() {}
 
 		bool isConnectionExpired() const {
-			return connection.expired();
+			return m_connection.expired();
 		}
 
 		Connection_ptr getConnection() const {
-			return connection.lock();
+			return m_connection.lock();
 		}
 
 		uint32_t getIP() const;
@@ -53,7 +53,7 @@ class Protocol : public std::enable_shared_from_this<Protocol>
 		OutputMessage_ptr getOutputBuffer(int32_t size);
 
 		OutputMessage_ptr& getCurrentBuffer() {
-			return outputBuffer;
+			return m_outputBuffer;
 		}
 
 		void send(OutputMessage_ptr msg) const {
@@ -61,7 +61,6 @@ class Protocol : public std::enable_shared_from_this<Protocol>
 				connection->send(msg);
 			}
 		}
-
 	protected:
 		void disconnect() const {
 			if (auto connection = getConnection()) {
@@ -69,13 +68,19 @@ class Protocol : public std::enable_shared_from_this<Protocol>
 			}
 		}
 		void enableXTEAEncryption() {
-			encryptionEnabled = true;
+			m_encryptionEnabled = true;
+		}
+		void disableXTEAEncryption() {
+			m_encryptionEnabled = false;
 		}
 		void setXTEAKey(const uint32_t* key) {
-			memcpy(this->key, key, sizeof(*key) * 4);
+			memcpy(m_key, key, sizeof(*key) * 4);
+		}
+		void enableChecksum() {
+			m_checksumEnabled = true;
 		}
 		void disableChecksum() {
-			checksumEnabled = false;
+			m_checksumEnabled = false;
 		}
 
 		void XTEA_encrypt(OutputMessage& msg) const;
@@ -83,19 +88,19 @@ class Protocol : public std::enable_shared_from_this<Protocol>
 		static bool RSA_decrypt(NetworkMessage& msg);
 
 		void setRawMessages(bool value) {
-			rawMessages = value;
+			m_rawMessages = value;
 		}
 
 		virtual void release() {}
 		friend class Connection;
 
-		OutputMessage_ptr outputBuffer;
+		OutputMessage_ptr m_outputBuffer;
 	private:
-		const ConnectionWeak_ptr connection;
-		uint32_t key[4];
-		bool encryptionEnabled;
-		bool checksumEnabled;
-		bool rawMessages;
+		const ConnectionWeak_ptr m_connection;
+		uint32_t m_key[4];
+		bool m_encryptionEnabled;
+		bool m_checksumEnabled;
+		bool m_rawMessages;
 };
 
 #endif

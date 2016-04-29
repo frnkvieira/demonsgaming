@@ -26,7 +26,7 @@
 
 extern Game g_game;
 
-BedItem::BedItem(uint16_t id) : Item(id)
+BedItem::BedItem(uint16_t _id) : Item(_id)
 {
 	house = nullptr;
 	internalRemoveSleeper();
@@ -185,10 +185,10 @@ void BedItem::wakeUp(Player* player)
 
 	if (sleeperGUID != 0) {
 		if (!player) {
-			Player regenPlayer(nullptr);
-			if (IOLoginData::loadPlayerById(&regenPlayer, sleeperGUID)) {
-				regeneratePlayer(&regenPlayer);
-				IOLoginData::savePlayer(&regenPlayer);
+			Player _player(nullptr);
+			if (IOLoginData::loadPlayerById(&_player, sleeperGUID)) {
+				regeneratePlayer(&_player);
+				IOLoginData::savePlayer(&_player);
 			}
 		} else {
 			regeneratePlayer(player);

@@ -72,7 +72,7 @@ class OutputMessage : public NetworkMessage
 			assert(outputBufferStart >= sizeof(T));
 			outputBufferStart -= sizeof(T);
 			memcpy(buffer + outputBufferStart, &add, sizeof(T));
-			//added header size to the message size
+			// added header size to the message size
 			length += sizeof(T);
 		}
 
@@ -100,8 +100,8 @@ class OutputMessagePool
 		void removeProtocolFromAutosend(const Protocol_ptr& protocol);
 	private:
 		OutputMessagePool() = default;
-		//NOTE: A vector is used here because this container is mostly read
-		//and relatively rarely modified (only when a client connects/disconnects)
+		// NOTE: A vector is used here because this container is mostly read 
+		// and relatively rarely modified (only when a client connects/disconnects)
 		std::vector<Protocol_ptr> bufferedProtocols;
 };
 

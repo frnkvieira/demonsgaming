@@ -22,7 +22,13 @@
 #include "inbox.h"
 #include "tools.h"
 
-Inbox::Inbox(uint16_t type) : Container(type, 30, false, true) {}
+Inbox::Inbox(uint16_t _type) :
+	Container(_type)
+{
+	maxSize = 30;
+	unlocked = false;
+	pagination = true;
+}
 
 ReturnValue Inbox::queryAdd(int32_t, const Thing& thing, uint32_t,
 		uint32_t flags, Creature*) const

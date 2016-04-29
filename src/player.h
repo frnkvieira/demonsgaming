@@ -181,8 +181,8 @@ class Player final : public Creature, public Cylinder
 			}
 		}
 
-		void setGUID(uint32_t guid) {
-			this->guid = guid;
+		void setGUID(uint32_t _guid) {
+			guid = _guid;
 		}
 		uint32_t getGUID() const {
 			return guid;
@@ -235,11 +235,11 @@ class Player final : public Creature, public Cylinder
 		}
 		void setGuild(Guild* guild);
 
-		const GuildRank* getGuildRank() const {
-			return guildRank;
+		uint8_t getGuildLevel() const {
+			return guildLevel;
 		}
-		void setGuildRank(const GuildRank* newGuildRank) {
-			guildRank = newGuildRank;
+		void setGuildLevel(uint8_t newGuildLevel) {
+			guildLevel = newGuildLevel;
 		}
 
 		bool isGuildMate(const Player* player) const;
@@ -270,6 +270,9 @@ class Player final : public Creature, public Cylinder
 		const GuildWarList& getGuildWarList() const {
 			return guildWarList;
 		}
+		void setGuildWarList(GuildWarList guildWarList) {
+			this->guildWarList = guildWarList;
+		}
 
 		Vocation* getVocation() const {
 			return vocation;
@@ -294,8 +297,8 @@ class Player final : public Creature, public Cylinder
 			return secureMode;
 		}
 
-		void setParty(Party* party) {
-			this->party = party;
+		void setParty(Party* _party) {
+			party = _party;
 		}
 		Party* getParty() const {
 			return party;
@@ -448,8 +451,8 @@ class Player final : public Creature, public Cylinder
 		Town* getTown() const {
 			return town;
 		}
-		void setTown(Town* town) {
-			this->town = town;
+		void setTown(Town* _town) {
+			town = _town;
 		}
 
 		void clearModalWindows();
@@ -508,9 +511,10 @@ class Player final : public Creature, public Cylinder
 		void addConditionSuppressions(uint32_t conditions);
 		void removeConditionSuppressions(uint32_t conditions);
 
+		DepotChest* getDepotBox();
 		DepotChest* getDepotChest(uint32_t depotId, bool autoCreate);
 		DepotLocker* getDepotLocker(uint32_t depotId);
-		void onReceiveMail() const;
+		void onReceiveMail();
 		bool isNearDepotBox() const;
 
 		bool canSee(const Position& pos) const final;
@@ -1126,10 +1130,10 @@ class Player final : public Creature, public Cylinder
 		}
 		uint32_t getNextActionTime() const;
 
-		Item* getWriteItem(uint32_t& windowTextId, uint16_t& maxWriteLen);
-		void setWriteItem(Item* item, uint16_t maxWriteLen = 0);
+		Item* getWriteItem(uint32_t& _windowTextId, uint16_t& _maxWriteLen);
+		void setWriteItem(Item* item, uint16_t _maxWriteLen = 0);
 
-		House* getEditHouse(uint32_t& windowTextId, uint32_t& listId);
+		House* getEditHouse(uint32_t& _windowTextId, uint32_t& _listId);
 		void setEditHouse(House* house, uint32_t listId = 0);
 
 		void learnInstantSpell(const std::string& spellName);
@@ -1152,9 +1156,9 @@ class Player final : public Creature, public Cylinder
 		void setNextWalkTask(SchedulerTask* task);
 		void setNextActionTask(SchedulerTask* task);
 
-		void death(Creature* lastHitCreature) final;
-		bool dropCorpse(Creature* lastHitCreature, Creature* mostDamageCreature, bool lastHitUnjustified, bool mostDamageUnjustified) final;
-		Item* getCorpse(Creature* lastHitCreature, Creature* mostDamageCreature) final;
+		void death(Creature* _lastHitCreature) final;
+		bool dropCorpse(Creature* _lastHitCreature, Creature* mostDamageCreature, bool lastHitUnjustified, bool mostDamageUnjustified) final;
+		Item* getCorpse(Creature* _lastHitCreature, Creature* mostDamageCreature) final;
 
 		//cylinder implementations
 		ReturnValue queryAdd(int32_t index, const Thing& thing, uint32_t count,
@@ -1227,7 +1231,6 @@ class Player final : public Creature, public Cylinder
 
 		BedItem* bedItem;
 		Guild* guild;
-		const GuildRank* guildRank;
 		Group* group;
 		Inbox* inbox;
 		Item* tradeItem;
@@ -1278,6 +1281,7 @@ class Player final : public Creature, public Cylinder
 
 		uint8_t soul;
 		uint8_t blessings;
+		uint8_t guildLevel;
 		uint8_t levelPercent;
 		uint8_t magLevelPercent;
 

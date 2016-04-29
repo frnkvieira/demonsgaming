@@ -155,6 +155,13 @@ class Creature : virtual public Thing
 		virtual void removeList() = 0;
 		virtual void addList() = 0;
 
+		const Position& getLastPosition() const {
+			return lastPosition;
+		}
+		void setLastPosition(const Position& newLastPos) {
+			lastPosition = newLastPos;
+		}
+
 		virtual bool canSee(const Position& pos) const;
 		virtual bool canSeeCreature(const Creature* creature) const;
 
@@ -399,7 +406,7 @@ class Creature : virtual public Thing
 		virtual void onRemoveTileItem(const Tile* tile, const Position& pos, const ItemType& iType,
 		                              const Item* item);
 
-		virtual void onCreatureAppear(Creature* creature, bool);
+		virtual void onCreatureAppear(Creature* creature, bool isLogin);
 		virtual void onRemoveCreature(Creature* creature, bool isLogout);
 		virtual void onCreatureMove(Creature* creature, const Tile* newTile, const Position& newPos,
 		                            const Tile* oldTile, const Position& oldPos, bool teleport);
@@ -419,11 +426,11 @@ class Creature : virtual public Thing
 		size_t getSummonCount() const {
 			return summons.size();
 		}
-		void setDropLoot(bool lootDrop) {
-			this->lootDrop = lootDrop;
+		void setDropLoot(bool _lootDrop) {
+			lootDrop = _lootDrop;
 		}
-		void setLossSkill(bool skillLoss) {
-			this->skillLoss = skillLoss;
+		void setLossSkill(bool _skillLoss) {
+			skillLoss = _skillLoss;
 		}
 
 		//creature script events
@@ -431,22 +438,22 @@ class Creature : virtual public Thing
 		bool unregisterCreatureEvent(const std::string& name);
 
 		Cylinder* getParent() const final {
-			return tile;
+			return _tile;
 		}
 		void setParent(Cylinder* cylinder) final {
-			tile = static_cast<Tile*>(cylinder);
-			position = tile->getPosition();
+			_tile = static_cast<Tile*>(cylinder);
+			_position = _tile->getPosition();
 		}
 
 		inline const Position& getPosition() const final {
-			return position;
+			return _position;
 		}
 
 		Tile* getTile() final {
-			return tile;
+			return _tile;
 		}
 		const Tile* getTile() const final {
-			return tile;
+			return _tile;
 		}
 
 		int32_t getWalkCache(const Position& pos) const;
@@ -482,7 +489,7 @@ class Creature : virtual public Thing
 		static const int32_t maxWalkCacheWidth = (mapWalkWidth - 1) / 2;
 		static const int32_t maxWalkCacheHeight = (mapWalkHeight - 1) / 2;
 
-		Position position;
+		Position _position;
 
 		typedef std::map<uint32_t, CountBlock_t> CountMap;
 		CountMap damageMap;
@@ -493,7 +500,7 @@ class Creature : virtual public Thing
 
 		std::forward_list<Direction> listWalkDir;
 
-		Tile* tile;
+		Tile* _tile;
 		Creature* attackedCreature;
 		Creature* master;
 		Creature* followCreature;
@@ -504,7 +511,7 @@ class Creature : virtual public Thing
 		uint32_t scriptEventsBitField;
 		uint32_t eventWalk;
 		uint32_t walkUpdateTicks;
-		uint32_t lastHitCreatureId;
+		uint32_t lastHitCreature;
 		uint32_t blockCount;
 		uint32_t blockTicks;
 		uint32_t lastStepCost;
@@ -517,6 +524,7 @@ class Creature : virtual public Thing
 		Outfit_t currentOutfit;
 		Outfit_t defaultOutfit;
 
+		Position lastPosition;
 		LightInfo internalLight;
 
 		Direction direction;
@@ -559,8 +567,8 @@ class Creature : virtual public Thing
 		}
 		virtual void getPathSearchParams(const Creature* creature, FindPathParams& fpp) const;
 		virtual void death(Creature*) {}
-		virtual bool dropCorpse(Creature* lastHitCreature, Creature* mostDamageCreature, bool lastHitUnjustified, bool mostDamageUnjustified);
-		virtual Item* getCorpse(Creature* lastHitCreature, Creature* mostDamageCreature);
+		virtual bool dropCorpse(Creature* _lastHitCreature, Creature* mostDamageCreature, bool lastHitUnjustified, bool mostDamageUnjustified);
+		virtual Item* getCorpse(Creature* _lastHitCreature, Creature* mostDamageCreature);
 
 		friend class Game;
 		friend class Map;

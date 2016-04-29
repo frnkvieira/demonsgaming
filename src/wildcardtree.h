@@ -25,7 +25,7 @@
 class WildcardTreeNode
 {
 	public:
-		explicit WildcardTreeNode(bool breakpoint) : breakpoint(breakpoint) {}
+		WildcardTreeNode(bool breakpoint) : breakpoint(breakpoint) {}
 		WildcardTreeNode(WildcardTreeNode&& other) : children(std::move(other.children)), breakpoint(other.breakpoint) {}
 
 		// non-copyable

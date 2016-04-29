@@ -28,9 +28,9 @@
 extern ConfigManager g_config;
 
 GlobalEvents::GlobalEvents() :
-	scriptInterface("GlobalEvent Interface")
+	m_scriptInterface("GlobalEvent Interface")
 {
-	scriptInterface.initState();
+	m_scriptInterface.initState();
 	thinkEventId = 0;
 	timerEventId = 0;
 }
@@ -59,7 +59,7 @@ void GlobalEvents::clear()
 	clearMap(serverMap);
 	clearMap(timerMap);
 
-	scriptInterface.reInitState();
+	m_scriptInterface.reInitState();
 }
 
 Event* GlobalEvents::getEvent(const std::string& nodeName)
@@ -67,7 +67,7 @@ Event* GlobalEvents::getEvent(const std::string& nodeName)
 	if (strcasecmp(nodeName.c_str(), "globalevent") != 0) {
 		return nullptr;
 	}
-	return new GlobalEvent(&scriptInterface);
+	return new GlobalEvent(&m_scriptInterface);
 }
 
 bool GlobalEvents::registerEvent(Event* event, const pugi::xml_node&)
@@ -209,8 +209,13 @@ GlobalEventMap GlobalEvents::getEventMap(GlobalEvent_t type)
 	}
 }
 
-GlobalEvent::GlobalEvent(LuaScriptInterface* interface):
-	Event(interface), eventType(GLOBALEVENT_NONE), nextExecution(0), interval(0) {}
+GlobalEvent::GlobalEvent(LuaScriptInterface* _interface):
+	Event(_interface)
+{
+	m_eventType = GLOBALEVENT_NONE;
+	m_nextExecution = 0;
+	m_interval = 0;
+}
 
 bool GlobalEvent::configureEvent(const pugi::xml_node& node)
 {
@@ -220,8 +225,8 @@ bool GlobalEvent::configureEvent(const pugi::xml_node& node)
 		return false;
 	}
 
-	name = nameAttribute.as_string();
-	eventType = GLOBALEVENT_NONE;
+	m_name = nameAttribute.as_string();
+	m_eventType = GLOBALEVENT_NONE;
 
 	pugi::xml_attribute attr;
 	if ((attr = node.attribute("time"))) {
@@ -229,25 +234,25 @@ bool GlobalEvent::configureEvent(const pugi::xml_node& node)
 
 		int32_t hour = params.front();
 		if (hour < 0 || hour > 23) {
-			std::cout << "[Error - GlobalEvent::configureEvent] Invalid hour \"" << attr.as_string() << "\" for globalevent with name: " << name << std::endl;
+			std::cout << "[Error - GlobalEvent::configureEvent] Invalid hour \"" << attr.as_string() << "\" for globalevent with name: " << m_name << std::endl;
 			return false;
 		}
 
-		interval |= hour << 16;
+		m_interval |= hour << 16;
 
 		int32_t min = 0;
 		int32_t sec = 0;
 		if (params.size() > 1) {
 			min = params[1];
 			if (min < 0 || min > 59) {
-				std::cout << "[Error - GlobalEvent::configureEvent] Invalid minute \"" << attr.as_string() << "\" for globalevent with name: " << name << std::endl;
+				std::cout << "[Error - GlobalEvent::configureEvent] Invalid minute \"" << attr.as_string() << "\" for globalevent with name: " << m_name << std::endl;
 				return false;
 			}
 
 			if (params.size() > 2) {
 				sec = params[2];
 				if (sec < 0 || sec > 59) {
-					std::cout << "[Error - GlobalEvent::configureEvent] Invalid second \"" << attr.as_string() << "\" for globalevent with name: " << name << std::endl;
+					std::cout << "[Error - GlobalEvent::configureEvent] Invalid second \"" << attr.as_string() << "\" for globalevent with name: " << m_name << std::endl;
 					return false;
 				}
 			}
@@ -264,25 +269,25 @@ bool GlobalEvent::configureEvent(const pugi::xml_node& node)
 			difference += 86400;
 		}
 
-		nextExecution = current_time + difference;
-		eventType = GLOBALEVENT_TIMER;
+		m_nextExecution = current_time + difference;
+		m_eventType = GLOBALEVENT_TIMER;
 	} else if ((attr = node.attribute("type"))) {
 		const char* value = attr.value();
 		if (strcasecmp(value, "startup") == 0) {
-			eventType = GLOBALEVENT_STARTUP;
+			m_eventType = GLOBALEVENT_STARTUP;
 		} else if (strcasecmp(value, "shutdown") == 0) {
-			eventType = GLOBALEVENT_SHUTDOWN;
+			m_eventType = GLOBALEVENT_SHUTDOWN;
 		} else if (strcasecmp(value, "record") == 0) {
-			eventType = GLOBALEVENT_RECORD;
+			m_eventType = GLOBALEVENT_RECORD;
 		} else {
-			std::cout << "[Error - GlobalEvent::configureEvent] No valid type \"" << attr.as_string() << "\" for globalevent with name " << name << std::endl;
+			std::cout << "[Error - GlobalEvent::configureEvent] No valid type \"" << attr.as_string() << "\" for globalevent with name " << m_name << std::endl;
 			return false;
 		}
 	} else if ((attr = node.attribute("interval"))) {
-		interval = std::max<int32_t>(SCHEDULER_MINTICKS, pugi::cast<int32_t>(attr.value()));
-		nextExecution = OTSYS_TIME() + interval;
+		m_interval = std::max<int32_t>(SCHEDULER_MINTICKS, pugi::cast<int32_t>(attr.value()));
+		m_nextExecution = OTSYS_TIME() + m_interval;
 	} else {
-		std::cout << "[Error - GlobalEvent::configureEvent] No interval for globalevent with name " << name << std::endl;
+		std::cout << "[Error - GlobalEvent::configureEvent] No interval for globalevent with name " << m_name << std::endl;
 		return false;
 	}
 	return true;
@@ -290,7 +295,7 @@ bool GlobalEvent::configureEvent(const pugi::xml_node& node)
 
 std::string GlobalEvent::getScriptEventName() const
 {
-	switch (eventType) {
+	switch (m_eventType) {
 		case GLOBALEVENT_STARTUP: return "onStartup";
 		case GLOBALEVENT_SHUTDOWN: return "onShutdown";
 		case GLOBALEVENT_RECORD: return "onRecord";
@@ -302,39 +307,39 @@ std::string GlobalEvent::getScriptEventName() const
 bool GlobalEvent::executeRecord(uint32_t current, uint32_t old)
 {
 	//onRecord(current, old)
-	if (!scriptInterface->reserveScriptEnv()) {
+	if (!m_scriptInterface->reserveScriptEnv()) {
 		std::cout << "[Error - GlobalEvent::executeRecord] Call stack overflow" << std::endl;
 		return false;
 	}
 
-	ScriptEnvironment* env = scriptInterface->getScriptEnv();
-	env->setScriptId(scriptId, scriptInterface);
+	ScriptEnvironment* env = m_scriptInterface->getScriptEnv();
+	env->setScriptId(m_scriptId, m_scriptInterface);
 
-	lua_State* L = scriptInterface->getLuaState();
-	scriptInterface->pushFunction(scriptId);
+	lua_State* L = m_scriptInterface->getLuaState();
+	m_scriptInterface->pushFunction(m_scriptId);
 
 	lua_pushnumber(L, current);
 	lua_pushnumber(L, old);
-	return scriptInterface->callFunction(2);
+	return m_scriptInterface->callFunction(2);
 }
 
 bool GlobalEvent::executeEvent()
 {
-	if (!scriptInterface->reserveScriptEnv()) {
+	if (!m_scriptInterface->reserveScriptEnv()) {
 		std::cout << "[Error - GlobalEvent::executeEvent] Call stack overflow" << std::endl;
 		return false;
 	}
 
-	ScriptEnvironment* env = scriptInterface->getScriptEnv();
-	env->setScriptId(scriptId, scriptInterface);
-	lua_State* L = scriptInterface->getLuaState();
-	scriptInterface->pushFunction(scriptId);
+	ScriptEnvironment* env = m_scriptInterface->getScriptEnv();
+	env->setScriptId(m_scriptId, m_scriptInterface);
+	lua_State* L = m_scriptInterface->getLuaState();
+	m_scriptInterface->pushFunction(m_scriptId);
 
 	int32_t params = 0;
-	if (eventType == GLOBALEVENT_NONE || eventType == GLOBALEVENT_TIMER) {
-		lua_pushnumber(L, interval);
+	if (m_eventType == GLOBALEVENT_NONE || m_eventType == GLOBALEVENT_TIMER) {
+		lua_pushnumber(L, m_interval);
 		params = 1;
 	}
 
-	return scriptInterface->callFunction(params);
+	return m_scriptInterface->callFunction(params);
 }
